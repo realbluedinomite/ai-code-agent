@@ -12,7 +12,7 @@ console.log('==========================================');
 // Configuration - UPDATE THESE VALUES
 const CONFIG = {
     username: 'realbluedinomite',
-    token: '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',
+    token: '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',
     repoName: 'ai-code-agent',
     description: 'AI Code Agent System - Intelligent code generation and analysis with TypeScript, PostgreSQL, and Groq AI'
 };
