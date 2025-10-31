@@ -67,7 +67,7 @@ Since the current environment has npm permission issues, here's how to set up an
 2. **Edit .env file with your settings:**
    ```env
    # Required
-   GROQ_API_KEY=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
+   GROQ_API_KEY=Lol, you thought you could find a cool key, it's free anyways buddy
    
    # Database (match your PostgreSQL setup)
    DB_HOST=localhost
