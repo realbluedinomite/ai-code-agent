@@ -1,0 +1,39 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "AI Code Agent Database",
+            "Group": "Development",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "ai_code_agent",
+            "Username": "ai_agent_user",
+            "UseSSHTunnel": 0,
+            "SSH Tunnel": {
+                " Tunnel": "",
+                " Host": "",
+                " Port": "22",
+                " Username": ""
+            },
+            "Comment": "Development database for AI Code Agent system",
+            "conn_params": {
+                "connect_timeout": 10,
+                "application_name": "pgAdmin",
+                "requiressl": 0
+            },
+            "waldir": "",
+            "sslmode": "prefer",
+            "sslcert": "",
+            "sslkey": "",
+            "sslrootcert": "",
+            "sslcrl": "",
+            "sslcompression": 0,
+            "useSSH": 0,
+            "Hidedown": false,
+            "bgColor": "#f0f0f0",
+            "fgColor": "#000000",
+            "service": "",
+            "session": "",
+            "showSystemObjects": false
+        }
+    }
+}
