@@ -1,0 +1,75 @@
+{
+  "compilerOptions": {
+    /* Basic Configuration */
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    
+    /* Type Checking */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    
+    /* Module Resolution */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    
+    /* Path Mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/types/*": ["src/types/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/services/*": ["src/services/*"],
+      "@/config/*": ["src/config/*"]
+    },
+    
+    /* Source Maps */
+    "sourceMap": true,
+    "mapRoot": "./dist",
+    
+    /* Emit Configuration */
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    
+    /* Experimental Features */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    /* Additional Options */
+    "allowJs": true,
+    "checkJs": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**/*"
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}

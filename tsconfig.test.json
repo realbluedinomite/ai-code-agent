@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /* Test-specific overrides */
+    "outDir": "./dist-test",
+    "rootDir": ".",
+    "tsBuildInfoFile": "./dist-test/.tsbuildinfo-test",
+    
+    /* Relaxed rules for test files */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-test"
+  ]
+}

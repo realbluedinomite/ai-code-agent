@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    /* Node.js specific configuration */
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "outDir": "./dist-tools",
+    "rootDir": "./tools",
+    
+    /* Type Checking - Relaxed for tools/scripts */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    
+    /* Module Resolution */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    
+    /* Path Mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/tools/*": ["tools/*"]
+    },
+    
+    /* Source Maps */
+    "sourceMap": true,
+    "mapRoot": "./dist-tools",
+    
+    /* Emit Configuration */
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "removeComments": true
+  },
+  "include": [
+    "tools/**/*",
+    "scripts/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-tools",
+    "dist-test"
+  ]
+}

@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Development
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai_code_agent_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ai_code_agent
+      POSTGRES_USER: ai_agent_user
+      POSTGRES_PASSWORD: ai_agent_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persistent data storage
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with custom scripts
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+      # Development configuration
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    networks:
+      - ai_network
+    command: >
+      postgres 
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c hba_file=/etc/postgresql/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_agent_user -d ai_code_agent"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis for Session Management and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: ai_code_agent_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - ai_network
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Database Administration Tools
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ai_code_agent_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ai-code-agent.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
+    networks:
+      - ai_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Database Backup Service (Optional)
+  postgres-backup:
+    image: postgres:15-alpine
+    container_name: ai_code_agent_backup
+    restart: "no"
+    environment:
+      PGPASSWORD: ai_agent_password
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup:/backup-scripts
+    networks:
+      - ai_network
+    depends_on:
+      - postgres
+    command: >
+      sh -c "
+        while true; do
+          echo 'Starting backup...'
+          pg_dump -h postgres -U ai_agent_user -d ai_code_agent > /backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+          echo 'Backup completed'
+          sleep 86400  # 24 hours
+        done
+      "
+    profiles:
+      - backup
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/postgres/data
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/redis/data
+  pgadmin_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./docker/pgadmin/data
+
+# Custom network
+networks:
+  ai_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

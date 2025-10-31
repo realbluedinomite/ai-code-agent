@@ -1,0 +1,393 @@
+{
+  "name": "ai-code-agent",
+  "version": "1.0.0",
+  "description": "AI Code Agent System with TypeScript, PostgreSQL, and Groq AI integration",
+  "main": "dist/index.js",
+  "bin": {
+    "ai-code-agent": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "dev:watch": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:e2e": "jest tests/e2e",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "test:runner": "node scripts/test-runner.js",
+    "test:setup": "node scripts/test-setup.js",
+    "test:db:setup": "node scripts/test-runner.js database:setup",
+    "test:db:cleanup": "node scripts/test-runner.js database:cleanup",
+    "test:dashboard": "ts-node scripts/test-dashboard.ts",
+    "test:dashboard:dev": "ts-node-dev --respawn --transpile-only scripts/test-dashboard.ts",
+    "test:quick": "ts-node scripts/quick-test.ts",
+    "test:quick:smoke": "ts-node scripts/quick-test.ts smoke",
+    "test:quick:list": "ts-node scripts/quick-test.ts list",
+    "test:quick:all": "ts-node scripts/quick-test.ts all",
+    "test:quick:all-optional": "ts-node scripts/quick-test.ts all-with-optional",
+    "test:auto": "ts-node scripts/automated-test-runner.ts",
+    "test:auto:ci": "ts-node scripts/automated-test-runner.ts ci",
+    "test:auto:coverage": "ts-node scripts/automated-test-runner.ts coverage",
+    "test:auto:benchmark": "ts-node scripts/automated-test-runner.ts benchmark",
+    "test:auto:continuous": "ts-node scripts/automated-test-runner.ts continuous",
+    "test:reports": "ts-node scripts/automated-test-runner.ts reports",
+    "test:history": "ts-node scripts/automated-test-runner.ts history",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "test:perf": "jest --testPathPattern=perf",
+    "test:snapshots": "jest --updateSnapshot",
+    "test:watchAll": "jest --watchAll",
+    "db:migrate": "ts-node scripts/migrate.ts",
+    "db:migrate:rollback": "ts-node scripts/migrate.ts down",
+    "db:seed": "ts-node scripts/seed.ts",
+    "db:setup": "ts-node scripts/db-setup.ts",
+    "db:reset": "npm run db:migrate:rollback && npm run db:migrate && npm run db:seed",
+    "db:status": "ts-node scripts/migrate.ts status",
+    "db:studio": "open http://localhost:8080 || xdg-open http://localhost:8080",
+    "db:backup": "./docker/dev.sh backup",
+    "db:restore": "./docker/dev.sh restore",
+    "docker:start": "./docker/dev.sh start",
+    "docker:stop": "./docker/dev.sh stop",
+    "docker:restart": "./docker/dev.sh restart",
+    "docker:status": "./docker/dev.sh status",
+    "docker:logs": "./docker/dev.sh logs",
+    "docker:reset": "./docker/dev.sh reset",
+    "docker:setup": "./docker/dev.sh setup",
+    "cli": "node dist/cli/index.js",
+    "cli:dev": "ts-node src/cli/index.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "predev": "npm run build",
+    "prestart": "npm run build",
+    "prepare": "husky",
+    "dev:full": "concurrently \"npm run build:watch\" \"npm run dev:watch\"",
+    "lint:staged": "lint-staged",
+    "lint:all": "eslint src tests scripts --ext .ts,.js",
+    "format:fix": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"*.json\" \"*.md\"",
+    "validate": "npm run type-check && npm run lint && npm run format:check && npm run test:unit",
+    "validate:ci": "npm run type-check && npm run lint && npm run format:check && npm run test:ci",
+    "clean:all": "npm run clean && rimraf node_modules && npm install",
+    "postinstall": "husky install || true",
+    "commit": "git-cz",
+    "release": "standard-version",
+    "analyze": "npm run build && npx webpack-bundle-analyzer dist/stats.json",
+    "security:audit": "npm audit",
+    "security:fix": "npm audit fix",
+    "deps:update": "npm update",
+    "deps:check": "npm outdated",
+    "docs:generate": "typedoc src --out docs/api",
+    "workflow:install": "npm install && npm run prepare && npm run test:setup",
+    "workflow:reset": "npm run clean:all && npm install && npm run test:db:setup",
+    "workflow:status": "echo '=== Project Status ===' && echo 'Node version:' && node --version && echo 'NPM version:' && npm --version && echo 'Git branch:' && git branch --show-current && echo 'Git status:' && git status --porcelain && echo 'Package scripts:' && npm run",
+    "git:hooks": "husky install",
+    "git:hooks:check": "npx husky check",
+    "pre-commit": "npx lint-staged",
+    "pre-push": "npm run test:unit",
+    "demo": "ts-node tests/demo/index.ts",
+    "demo:all": "ts-node tests/demo/index.ts all",
+    "demo:simple": "ts-node tests/demo/demo-simple.ts",
+    "demo:realistic": "ts-node tests/demo/demo-realistic.ts",
+    "demo:interactive": "ts-node tests/demo/demo-interactive.ts",
+    "demo:quick": "ts-node tests/demo/index.ts quick",
+    "demo:web": "ts-node tests/demo/demo-simple.ts web",
+    "demo:api": "ts-node tests/demo/demo-simple.ts api",
+    "demo:cli": "ts-node tests/demo/demo-simple.ts cli",
+    "demo:config": "ts-node tests/demo/demo-simple.ts config",
+    "demo:ecommerce": "ts-node tests/demo/demo-realistic.ts ecommerce",
+    "demo:banking": "ts-node tests/demo/demo-realistic.ts banking",
+    "demo:healthcare": "ts-node tests/demo/demo-realistic.ts healthcare",
+    "demo:web-builder": "ts-node tests/demo/demo-interactive.ts web",
+    "demo:api-wizard": "ts-node tests/demo/demo-interactive.ts api",
+    "demo:database": "ts-node tests/demo/demo-interactive.ts database",
+    "demo:orchestrator": "ts-node tests/demo/demo-interactive.ts project"
+  },
+  "keywords": [
+    "ai",
+    "code-agent",
+    "typescript",
+    "nodejs",
+    "postgresql",
+    "groq",
+    "websocket",
+    "express"
+  ],
+  "author": "AI Code Agent Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "express-ws": "^5.0.2",
+    "pg": "^8.11.3",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "dotenv": "^16.3.1",
+    "groq-sdk": "^0.34.0",
+    "chalk": "^4.1.2",
+    "ora": "^6.3.1",
+    "inquirer": "^9.2.12",
+    "commander": "^11.1.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "joi": "^17.11.0",
+    "uuid": "^9.0.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "sharp": "^0.32.6",
+    "multer": "^1.4.5-lts.1",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1",
+    "socket.io": "^4.7.4",
+    "socket.io-client": "^4.7.4",
+    "openai": "^4.20.1",
+    "eventemitter3": "^5.0.1",
+    "pino": "^8.16.2",
+    "pino-pretty": "^10.2.0",
+    "date-fns": "^2.30.0",
+    "lodash": "^4.17.21",
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "ajv": "^8.12.0",
+    "http-status-codes": "^2.3.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "clsx": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.9",
+    "@types/jest": "^29.5.7",
+    "@types/pg": "^8.10.9",
+    "@types/chalk": "^2.2.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/uuid": "^9.0.7",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
+    "@types/multer": "^1.4.11",
+    "@types/compression": "^1.7.5",
+    "@types/lodash": "^4.14.202",
+    "@types/lodash.get": "^4.4.9",
+    "@types/lodash.set": "^4.3.9",
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^6.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0",
+    "source-map-support": "^0.5.21",
+    "@types/source-map-support": "^0.5.10",
+    "cross-env": "^7.0.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "nodemon-webpack-plugin": "^4.0.8",
+    "concurrently": "^8.2.2",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "standard-version": "^9.5.0",
+    "typedoc": "^0.25.4",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "@commitlint/cli": "^18.2.0",
+    "@commitlint/config-conventional": "^18.1.0"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/*.(test|spec).ts"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.ts"
+    ],
+    "moduleNameMapping": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+    },
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "env": {
+      "node": true,
+      "es2022": true,
+      "jest": true
+    },
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off"
+    },
+    "ignorePatterns": [
+      "dist/",
+      "node_modules/",
+      "coverage/"
+    ]
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false
+  },
+  "tsconfig": {
+    "compilerOptions": {
+      "target": "ES2020",
+      "lib": [
+        "ES2020",
+        "DOM"
+      ],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "rootDir": "./src",
+      "outDir": "./dist",
+      "baseUrl": "./",
+      "paths": {
+        "@/*": [
+          "src/*"
+        ],
+        "@/types/*": [
+          "src/types/*"
+        ],
+        "@/utils/*": [
+          "src/utils/*"
+        ],
+        "@/services/*": [
+          "src/services/*"
+        ],
+        "@/models/*": [
+          "src/models/*"
+        ],
+        "@/controllers/*": [
+          "src/controllers/*"
+        ],
+        "@/middleware/*": [
+          "src/middleware/*"
+        ],
+        "@/database/*": [
+          "src/database/*"
+        ]
+      },
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "noUncheckedIndexedAccess": true,
+      "exactOptionalPropertyTypes": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "declaration": true,
+      "declarationMap": true,
+      "sourceMap": true,
+      "removeComments": false,
+      "importHelpers": true,
+      "downlevelIteration": true,
+      "incremental": true,
+      "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    },
+    "include": [
+      "src/**/*",
+      "tests/**/*"
+    ],
+    "exclude": [
+      "node_modules",
+      "dist",
+      "coverage"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  }
+}
